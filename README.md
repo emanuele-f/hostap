@@ -46,3 +46,14 @@ then
 cd wpa_supplicant
 make
 ```
+
+## Run
+
+The `wpa_client.sh` script provides a conveninent way to connect to a WPA network on a specific channel, without the burden to create the wpa_supplicant.conf file:
+
+```
+cd wpa_supplicant
+
+# Connect to "Some SSID" on channel 1
+./wpa_client.sh wlan0 "Some SSID" my_passphrase 1
+```
