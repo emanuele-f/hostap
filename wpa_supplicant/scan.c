@@ -2276,6 +2276,38 @@ void filter_scan_res(struct wpa_supplicant *wpa_s,
 }
 
 
+void filter_scan_freqs(struct wpa_supplicant *wpa_s,
+		     struct wpa_scan_results *res)
+{
+	size_t i, j, k;
+
+	if (wpa_s->conf->freq_list == NULL)
+		return;
+
+	for (i = 0, j = 0; i < res->num; i++) {
+		u8 found = 0;
+
+		// Check if the specified frequency is allowed in conf->freq_list
+		for(k = 0; wpa_s->conf->freq_list[k] && !found; k++) {
+			if(wpa_s->conf->freq_list[k] == res->res[i]->freq)
+				found = 1;
+		}
+
+		if(found) {
+			res->res[j++] = res->res[i];
+		} else {
+			os_free(res->res[i]);
+			res->res[i] = NULL;
+		}
+	}
+
+	if (res->num != j) {
+		wpa_printf(MSG_DEBUG, "Filtered out %d scan results",
+			   (int) (res->num - j));
+		res->num = j;
+	}
+}
+
 void scan_snr(struct wpa_scan_res *res)
 {
 	if (res->flags & WPA_SCAN_NOISE_INVALID) {
@@ -2731,6 +2763,7 @@ wpa_supplicant_get_scan_results(struct wpa_supplicant *wpa_s,
 		os_get_reltime(&scan_res->fetch_time);
 	}
 	filter_scan_res(wpa_s, scan_res);
+	filter_scan_freqs(wpa_s, scan_res);
 
 	for (i = 0; i < scan_res->num; i++) {
 		struct wpa_scan_res *scan_res_item = scan_res->res[i];
