@@ -1,4 +1,16 @@
-This repo contains a patched `wpa_supplicant` to properly connect to APs with the same MAC but on different channels.
+This repo contains a patched `wpa_supplicant` to connect to an AP on the correct channel when multiple APs share the same MAC address.
+
+The corresponding configuration `wpa_supplicant.conf` would be:
+
+```
+network={
+  ssid="Some SSID"
+  psk="your_psk"
+}
+
+# connect to AP on channel 1
+freq_list=2412
+```
 
 Upstream repo: git://w1.fi/srv/git/hostap.git
 
